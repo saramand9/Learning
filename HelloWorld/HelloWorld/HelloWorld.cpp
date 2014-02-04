@@ -6,7 +6,7 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	auto str = "hello world";
+	auto str = "hello world!";
 	printf("%s\n", str);
 
 	return 0;
