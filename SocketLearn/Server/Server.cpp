@@ -71,10 +71,33 @@ int _tmain(int argc, _TCHAR* argv[])
     
     printf("ip %s port %u connected!\n",inet_ntoa(ClientAddr.sin_addr), ntohs(ClientAddr.sin_port));
     
+    const int cnBuffLen = 1024;
+
+    char szBuff[cnBuffLen];
     
+    do {
+        nRetCode = recv(ClientSocket, szBuff, cnBuffLen, 0);
+        if (nRetCode == 0)
+        {
+            printf("Connect closed!\n");;
+            break;
+        }
+        else if(nRetCode == SOCKET_ERROR)
+        {
+             printf("%s occurs errs at line %d, error code is %d\n", __FUNCTION__, __LINE__, WSAGetLastError());
+             break;
+        }
+        else
+        {
+            szBuff[nRetCode] = 0;
+            printf("Server recive msg: [%s]\n", szBuff);
+        }
+
+    }while(true);
+   
+
     getchar();
 
-Exit0:
     closesocket(ListenSocket);
     closesocket(ClientSocket);
 Exit1:

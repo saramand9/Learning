@@ -14,7 +14,6 @@ int _tmain(int argc, _TCHAR* argv[])
     WSADATA         wsaData;
     sockaddr_in     ServerAddr;
     SOCKET          ClientSocket;
-    SOCKET          ServerSocket;
     int             nRetCode = 0;
     unsigned short  uPort = 6628;
     char            szIP[] = "127.0.0.1";
@@ -39,20 +38,33 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
     printf("Start connect %s:%u\n", inet_ntoa(ServerAddr.sin_addr), ntohs(ServerAddr.sin_port));
-    ServerSocket = connect(ClientSocket, (sockaddr*)&ServerAddr, sizeof(ServerAddr)); //3)
+    nRetCode = connect(ClientSocket, (sockaddr*)&ServerAddr, sizeof(ServerAddr)); //3)
     
-    if (ServerSocket == INVALID_SOCKET)
+    if (nRetCode == SOCKET_ERROR)
     {
         printf("%s occurs errs at line %d, error code %d\n", __FUNCTION__, __LINE__, WSAGetLastError());
         goto Exit1;
     }
     
-    printf("Start connect %s:%u OK\n", inet_ntoa(ServerAddr.sin_addr), ntohs(ServerAddr.sin_port));
+    printf("Connect %s:%u OK\n", inet_ntoa(ServerAddr.sin_addr), ntohs(ServerAddr.sin_port));
+    
+    const int cnBuffLen = 1024;
+    char szMsg[cnBuffLen] = {0};
+
+    while (gets_s(szMsg, cnBuffLen) != NULL)
+    {
+        nRetCode = send(ClientSocket, szMsg, (int)strlen(szMsg) + 1, 0);
+        if (nRetCode == SOCKET_ERROR)
+        {
+            printf("%s occurs errs at line %d, error code %d\n", __FUNCTION__, __LINE__, WSAGetLastError());
+            break;
+        }
+        szMsg[nRetCode] = 0;
+        printf("Client send msg [%s]\n",szMsg);
+    }
     
     getchar();
-Exit0:
     closesocket(ClientSocket);
-    closesocket(ServerSocket);
 Exit1:
     WSACleanup();
 	return 0;
