@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <tchar.h>
-
-
+#include <string.h>
+#include <assert.h>
 
 // TODO: reference additional headers your program requires here

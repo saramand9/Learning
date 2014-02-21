@@ -8,6 +8,9 @@ using namespace std;
 
 #pragma comment(lib, "ws2_32.lib")
 
+
+#define EXIT_MSG "bye"
+
 int _tmain(int argc, _TCHAR* argv[])
 {
     
@@ -60,6 +63,12 @@ int _tmain(int argc, _TCHAR* argv[])
             break;
         }
         szMsg[nRetCode] = 0;
+        
+        if (strcmp(szMsg, EXIT_MSG) == 0)
+        {
+            closesocket(ClientSocket);
+            break;
+        }
         printf("Client send msg [%s]\n",szMsg);
     }
     
