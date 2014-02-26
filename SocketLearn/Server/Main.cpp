@@ -1,30 +1,34 @@
 // Main.cpp : Defines the entry point for the console application.
 //
 #include "stdafx.h"
-#include <WinSock2.h>
 #include <iostream>
 #include "Server.h"
 
+#ifdef WIN32
+    #pragma comment(lib, "ws2_32.lib")
+#endif
+
 using namespace std;
 
-#pragma comment(lib, "ws2_32.lib")
 
 void Active()
 {
 
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {   
-    int nRetCode = 0;
+    int     nRetCode = 0;
+    char    szIP[] = "192.168.1.105";
 
     Server* pServer = new Server();
+
     if (pServer == NULL)
     {
         goto Exit0;
     }
 
-    nRetCode = pServer->Init("127.0.0.1", 6628);
+    nRetCode = pServer->Init(szIP, 6628);
     nRetCode = pServer->Listen();
     nRetCode = pServer->ProcessNewConnect();
     nRetCode = pServer->ProcessMsg();

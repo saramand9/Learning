@@ -1,11 +1,23 @@
 #ifndef __SERVER_H__
 #define __SERVER_H__
 
-#include <process.h>
-#include <Windows.h>
 
-#define MAX_CLIENT_SOCKET   10240
-#define MAX_BUFFER_SIZE     2
+#ifdef WIN32
+    #include <WinSock2.h>
+    #include <process.h>
+#else
+    #include <pthread.h>
+#endif
+
+#ifdef __GNUC__
+    typedef int                 SOCKET;
+    #define INVALID_SOCKET      (SOCKET)(~0)
+    #define SOCKET_ERROR        -1
+    typedef void*				PVOID;
+#endif
+
+#define MAX_CLIENT_SOCKET   1024
+#define MAX_BUFFER_SIZE     1024
 
 class Server
 {
@@ -18,8 +30,15 @@ public:
     int ProcessNewConnect();
     int Listen();
 private:
-    static unsigned int  __stdcall ThreadNewConnectFunc(PVOID pVoid);
+
+#ifdef __GNUC__
+    static void* ThreadNewConnectFunc(PVOID pVoid);
+    static void* ThreadMsgFunc(PVOID pVoid);
+#else
+    static unsigned int __stdcall ThreadNewConnectFunc(PVOID pVoid);
     static unsigned int __stdcall ThreadMsgFunc(PVOID pVoid);
+#endif
+
 private:
     char           m_szIP[128];
     unsigned short m_uPort;
@@ -32,6 +51,9 @@ private:
 
     int            AddNewConnect(SOCKET socket);
     int            RemoveConnect(SOCKET socket);
+
+    static int     __GetSocketLastError();
+    static void    __CloseSocket(SOCKET socket);
 
 };
 #endif
